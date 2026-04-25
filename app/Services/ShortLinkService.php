@@ -26,9 +26,22 @@ class ShortLinkService
     {
         return $this->shortLinkRepo->getTargetByShortTokenAndType($target, $type);
     }
-    public function deleteByShortToken(string $short_token)
+    public function deleteByShortToken(string $short_token): bool
     {
-        return $this->shortLinkRepo->deleteByShortToken($short_token);
+        return $this->shortLinkRepo->deleteBy([
+            'short_token' => $short_token
+        ]);
+    }
+    public function deleteByTargetInvite(string $invite_code): bool
+    {
+
+        $where = [
+            'target' => $invite_code,
+            'type' => 'invite'
+        ];
+
+
+        return $this->shortLinkRepo->deleteBy($where);
     }
     public function getInviteByShortToken(string $short_token): ?ShortLink
     {

@@ -16,7 +16,8 @@ class AccountDataResource extends JsonResource
     {
         return [
             'email' => $this->email,
-            'full_name' => $this->full_name
+            'full_name' => $this->full_name,
+            'id' => $this->agent_id
         ];
     }
 }

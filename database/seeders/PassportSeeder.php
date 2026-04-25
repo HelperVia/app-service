@@ -14,7 +14,7 @@ class PassportSeeder extends Seeder
 
         if (!file_exists(storage_path('oauth-private.key'))) {
             Artisan::call('passport:keys');
-            $this->command->info('✅ Keys created');
+            $this->command->info(' Keys created');
         }
 
 

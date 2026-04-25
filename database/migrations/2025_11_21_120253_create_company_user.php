@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Constants\Agent;
+use App\Domain\Agent\Constants\Agent;
 return new class extends Migration {
 
 

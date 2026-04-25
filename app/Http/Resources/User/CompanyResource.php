@@ -5,7 +5,7 @@ namespace App\Http\Resources\User;
 use App\Constants\YesNo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Constants\Agent;
+use App\Domain\Agent\Constants\Agent;
 class CompanyResource extends JsonResource
 {
     /**

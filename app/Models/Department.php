@@ -10,6 +10,6 @@ class Department extends Model
 
     protected $connection = 'mongodb';
     protected $table = 'departments';
-    protected $fillable = ['company_license_number', 'department_name', 'default'];
+    protected $fillable = ['department_name', 'default', 'status', 'department_key'];
 
 }

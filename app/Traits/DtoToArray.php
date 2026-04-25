@@ -4,6 +4,8 @@ namespace App\Traits;
 
 trait DtoToArray
 {
+
+
     public function toArray(): array
     {
         $data = [];

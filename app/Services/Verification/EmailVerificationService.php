@@ -5,6 +5,7 @@ namespace App\Services\Verification;
 
 use App\Constants\YesNo;
 use App\Contracts\Verification\VerificationInterface;
+use App\DTO\User\UpdateUserData;
 use App\Models\User;
 use App\Services\UserService;
 
@@ -35,9 +36,10 @@ class EmailVerificationService implements VerificationInterface
     {
 
         $user = empty($user) ? $this->service->getAuthenticatedUser() : $user;
-        return $this->service->update($user, [
-            'email_verification' => YesNo::YES
-        ]);
+        $updateUserData = new UpdateUserData(
+            email_verification: YesNo::YES
+        );
+        return $this->service->update($user, $updateUserData);
     }
 
 }

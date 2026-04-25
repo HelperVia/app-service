@@ -22,7 +22,7 @@ class CreateUserData extends Validate implements DtoInterface
     ) {
         $this->password ??= $this->generatePassword();
         $this->password = Hash::make($this->password);
-        if ($this->email_verification == YesNo::YES && $this->email_verification_code == null) {
+        if ($this->email_verification == YesNo::NO && $this->email_verification_code == null) {
             $this->email_verification_code = app(EmailVerificationService::class)->generate();
         }
         if ($this->full_name !== null) {

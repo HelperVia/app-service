@@ -17,7 +17,7 @@ class CreateUserAction
     {
     }
 
-    public function execute(array $data, $verify = true)
+    public function execute(array $data, $verify = false)
     {
 
         $this->validateField($data);
@@ -34,7 +34,7 @@ class CreateUserAction
             email: $email,
             full_name: $fullname,
             password: $password,
-            email_verification: $verify ? YesNo::YES : YesNo::NO
+            email_verification: $verify ? YesNo::NO : YesNo::YES
         );
         return $this->userService->create($userData);
     }

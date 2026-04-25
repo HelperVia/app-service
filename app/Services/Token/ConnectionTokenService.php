@@ -3,6 +3,7 @@
 namespace App\Services\Token;
 
 use App\Contracts\Token\TokenInterface;
+use App\DTO\Utils\JWTConfig;
 use App\Utils\Crypto;
 use App\Utils\JWTHelper;
 use App\Traits\TokenCrypto;
@@ -11,35 +12,32 @@ use Exception;
 class ConnectionTokenService implements TokenInterface
 {
     use TokenCrypto;
-    private const TOKEN_LIFETIME = 3600;
+
+    private $jwt = null;
 
     public function __construct(
-        private JWTHelper $jwt,
         private Crypto $crypto
     ) {
+
+        $config = JWTConfig::forAgent();
+        $this->jwt = new JWTHelper($config);
     }
 
-    public function encode(array $data): string
+    public function encode(array $data): array
     {
         $this->validateEncodeData($data);
 
-        $tokenData = [
-            'license' => $data['license'],
-            'type' => $data['type'],
-            'user_id' => $data['user_id'],
-        ];
-
-        $json = $this->encodeJson($tokenData);
-        $encrypted = $this->encryptData($json);
-
         $payload = [
-            'iat' => time(),
-            'nbf' => time(),
-            'exp' => time() + self::TOKEN_LIFETIME,
-            'data' => $encrypted
+            'agent_id' => $data['agent_id'],
+            'company_id' => $data['company_id'],
+            'device_type' => $data['device_type'],
+            'license_id' => $data['license_id']
         ];
-
-        return $this->jwt->encode($payload);
+        return [
+            'device_type' => $data['device_type'],
+            'access_token' => $this->jwt->encode($payload),
+            'expires_in' => $this->jwt->config->ttl
+        ];
     }
 
     public function decode(string $token): array
@@ -52,17 +50,12 @@ class ConnectionTokenService implements TokenInterface
 
         $this->validateDecodedToken($decoded);
 
-        $json = $this->decryptData($decoded['data']);
-        $payload = $this->decodeJson($json);
-
-        $this->validatePayloadStructure($payload);
-
-        return $payload;
+        return $decoded;
     }
 
     public function validateEncodeData(array $data): void
     {
-        if (!isset($data['license'], $data['type'], $data['user_id'])) {
+        if (!isset($data['company_id'], $data['agent_id'], $data['device_type'], $data['license_id'])) {
             throw new Exception("Missing required token fields", 400);
         }
     }
@@ -78,12 +71,6 @@ class ConnectionTokenService implements TokenInterface
         }
     }
 
-    private function validatePayloadStructure(array $payload): void
-    {
-        if (!isset($payload['license'], $payload['type'], $payload['user_id'])) {
-            throw new Exception("Token missing required fields", 400);
-        }
-    }
 
 
 

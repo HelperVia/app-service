@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Services;
+use App\Constants\YesNo;
+use App\Domain\Agent\Services\AgentService;
 use App\Http\Resources\Company\UsersResource;
 use App\Models\Companies;
 use App\Models\User;
@@ -49,10 +51,9 @@ class CompanyService
     {
         return $this->companyRepository->getUsers($companies);
     }
-    public function getTeams(Companies $companies)
-    {
 
-        $agents = $this->agentService->getAgents($companies->license_number);
+    public function enrichAgentsWithUserAndInvite(Companies $companies, \Illuminate\Support\Collection $agents)
+    {
         $userIds = $agents->pluck('user_id')->unique()->toArray();
         $users = $this->companyRepository->getUsersByIds($companies, $userIds);
         $usersByID = $users->keyBy('id');
@@ -65,7 +66,7 @@ class CompanyService
 
         $invitesByUserId = $invites->keyBy('invited_id');
 
-        $agents = $agents->map(function ($agent) use ($usersByID, $invitesByUserId) {
+        return $agents->map(function ($agent) use ($usersByID, $invitesByUserId) {
             if ($usersByID->has($agent->user_id)) {
                 $user = $usersByID->get($agent->user_id);
                 $agent->email = $user->email;
@@ -74,8 +75,8 @@ class CompanyService
                 return $agent;
             }
             if ($invitesByUserId->has($agent->user_id)) {
-
                 $invite = $invitesByUserId->get($agent->user_id);
+                $agent->invited = YesNo::YES;
                 $agent->email = $invite->invited_email;
                 $agent->agent_name = $agent->agent_name ?? $invite->temporary_name;
                 $agent->source = 'invite';
@@ -85,13 +86,24 @@ class CompanyService
             return null;
 
         })->filter()->values();
-        return $agents;
+    }
+    public function getTeams(Companies $companies)
+    {
+
+        $agents = $this->agentService->getAgents($companies->license_number);
+
+        return $this->enrichAgentsWithUserAndInvite($companies, $agents);
     }
 
     public function findCompanyByLicenseNumber(string $license_number): ?Companies
     {
         return $this->companyRepository->findCompanyByLicenseNumber($license_number);
     }
+    public function isValidLicense(string $license)
+    {
+        return $this->findCompanyByLicenseNumber($license);
+    }
+
 
     public function getUserByEmail(Companies $companies, string $email): ?User
     {

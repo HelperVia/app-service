@@ -3,20 +3,23 @@
 namespace App\Services;
 
 
-use App\DTO\Invite\ChangeInviteStatusData;
-use App\DTO\Invite\CreateInviteData;
+use App\Domain\Invite\DTO\ChangeInviteStatusData;
+use App\Domain\Invite\DTO\CreateInviteData;
+use App\Domain\Invite\DTO\UpdateInviteData;
 use App\Exceptions\ApiException;
 use App\Models\Invite;
 use App\Models\User;
-use App\Repositories\InviteRepository;
+use App\Domain\Invite\Repositories\InviteRepository;
 use App\Services\Token\InviteTokenService;
 
 class InviteService
 {
 
 
-    public function __construct(private InviteRepository $inviteRepository, private InviteTokenService $inviteToken)
-    {
+    public function __construct(
+        private InviteRepository $inviteRepository,
+        private InviteTokenService $inviteToken
+    ) {
     }
 
     public function findByInviteCode(string $code): ?Invite
@@ -55,7 +58,7 @@ class InviteService
             'invited_role' => $data->invited_role,
             'temporary_name' => $data->temporary_name,
             'invite_code' => $data->invite_code,
-            'document_id' => $data->document_id,
+
         ];
         return $this->inviteRepository->create($data);
     }
@@ -71,15 +74,29 @@ class InviteService
         return !empty($localPart) ? $localPart : 'Agent';
     }
 
-    public function update(Invite $invite, array $data): ?Invite
+    public function save(Invite $invite, UpdateInviteData $data): ?Invite
     {
-
-        return $this->inviteRepository->update($invite, $data);
+        return $this->inviteRepository->save($invite, $data->toArray());
     }
     public function changeStatus(Invite $invite, ChangeInviteStatusData $data)
     {
 
         return $this->inviteRepository->changeStatus($invite, $data->status);
+    }
+    public function getInviteWithCompany(
+        ?array $inviteWhere = null,
+        ?array $companyWhere = null
+    ) {
+        return $this->inviteRepository->getInviteWithCompany($inviteWhere, $companyWhere);
+    }
+
+    public function deleteBy(array $where = null): bool
+    {
+        return $this->inviteRepository->deleteBy($where);
+    }
+    public function delete(string $id): bool
+    {
+        return $this->inviteRepository->delete($id);
     }
 
 }

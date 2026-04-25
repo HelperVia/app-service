@@ -22,9 +22,11 @@ class ShortLinkRepository
         return $this->shortLinkModel->where('short_token', $target)
             ->where('type', $type)->first();
     }
-    public function deleteByShortToken(string $short_token)
+    public function deleteBy(array $where): bool
     {
-        return $this->shortLinkModel->where('short_token', $short_token)->delete();
+        return $this->shortLinkModel::query()->where($where)->delete() > 0;
+
+
     }
     public function getInviteByShortToken(string $short_token): ?ShortLink
     {

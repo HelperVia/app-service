@@ -5,8 +5,8 @@ namespace App\Actions\User;
 use App\Actions\Auth\CreateTokenAction;
 use App\Actions\Company\CreateCompanyAction;
 
-use App\Actions\Team\Invite\TeamInviteLinkValidateAction;
-use App\Actions\Team\Invite\TeamInviteComplete;
+use App\Domain\Invite\Actions\TeamInviteLinkValidateAction;
+use App\Domain\Invite\Actions\TeamInviteComplete;
 use App\Models\Invite;
 use App\Models\User;
 use App\Services\InviteService;

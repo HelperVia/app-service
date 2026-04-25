@@ -27,6 +27,14 @@ class UserRepository
         return $user->companies()->attach($company_id, $data);
     }
 
+    public function detachCompanyByLicenseNumber(User $user, string $licenseNumber): bool
+    {
+        return $user->companies()
+            ->where('license_number', $licenseNumber)
+            ->limit(1)
+            ->detach() > 0;
+    }
+
     public function update(User $user, $data): ?User
     {
         $user->fill($data);
@@ -61,6 +69,10 @@ class UserRepository
     public function getCompanies(User $user): Collection
     {
         return $user->companies()->get();
+    }
+    public function find(string $id): ?User
+    {
+        return $this->model->find($id);
     }
 
 }

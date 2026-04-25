@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Domain\Department\Repositories\DepartmentRepositoryInterface;
+use App\Models\Settings;
+use App\Observers\SettingsObserver;
+use App\Repositories\DepartmentRepository;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 use Carbon\CarbonInterval;
@@ -13,7 +17,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            DepartmentRepositoryInterface::class,
+            DepartmentRepository::class
+        );
     }
 
     /**
@@ -21,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Settings::observe(SettingsObserver::class);
         Passport::tokensExpireIn(CarbonInterval::days(days: 15));
         Passport::refreshTokensExpireIn(CarbonInterval::days(30));
         Passport::personalAccessTokensExpireIn(CarbonInterval::months(6));

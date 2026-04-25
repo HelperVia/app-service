@@ -42,4 +42,5 @@ class CompanyRepository
         return $companies->users()->where('email', $email)->first();
     }
 
+
 }

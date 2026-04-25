@@ -41,7 +41,7 @@ class InviteTokenService implements TokenInterface
     public function validateEncodeData(array $data): void
     {
         if (!isset($data['email'], $data['inviting_company_id'])) {
-            throw new InvalidArgumentException("Missing required token fields", 400);
+            throw new InvalidArgumentException("Missing required token fields");
         }
     }
 

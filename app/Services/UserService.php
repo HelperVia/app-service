@@ -7,11 +7,7 @@ use App\DTO\User\CreateUserData;
 use App\DTO\User\UpdateUserData;
 use App\Http\Resources\User\CompanyResource;
 use App\Models\User;
-use App\Services\InviteService;
 use App\Repositories\UserRepository;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use App\Services\CompanyService;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class UserService
@@ -36,6 +32,12 @@ class UserService
     {
         return $this->userRepository->attachCompany($user, $company_id, $data);
     }
+    public function detachCompanyByLicenseNumber(User $user, string $license_number): bool
+    {
+        return $this->userRepository->detachCompanyByLicenseNumber($user, $license_number);
+    }
+
+
     public function isEmailUsed(string $email): bool
     {
         return $this->getUserByEmail($email) ? true : false;
@@ -43,9 +45,7 @@ class UserService
 
     public function update(User $user, UpdateUserData $data): ?User
     {
-
         return $this->userRepository->update($user, $data->toArray());
-
     }
 
     public function isValidLicense(?string $license, User $user): bool
@@ -68,6 +68,11 @@ class UserService
         return auth()->user();
     }
 
+
+    public function find(string $id): ?User
+    {
+        return $this->userRepository->find($id);
+    }
 
 
 }

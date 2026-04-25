@@ -17,9 +17,11 @@ class ApiAuthResponse
     {
         $response = $next($request);
 
-        $data = $response->getData(true);
-        $data['authentication'] = true;
-        $response->setData($data);
+        if ($response instanceof JsonResponse) {
+            $data = $response->getData(true);
+            $data['authentication'] = true;
+            $response->setData($data);
+        }
 
         return $response;
     }

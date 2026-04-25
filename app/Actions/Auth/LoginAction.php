@@ -9,10 +9,12 @@ class LoginAction
 {
 
 
-    public function __construct(private CreateTokenAction $action)
-    {
+    public function __construct(
+        private readonly CreateTokenAction $action,
+        private readonly AuthDataAction $authDataAction
+    ) {
     }
-    public function execute(array $request): array|bool
+    public function execute(array $request): \Illuminate\Http\Resources\Json\JsonResource|bool
     {
 
 
@@ -27,14 +29,7 @@ class LoginAction
         if ($response) {
             $user = auth()->user();
             $token = $this->action->execute($user);
-
-            return [
-                'id' => $user->id,
-                'fullname' => $user->full_name,
-                'email' => $user->email,
-                'accessToken' => $token['access_token'],
-
-            ];
+            return $this->authDataAction->execute($user, $token['access_token']);
 
         }
         return false;

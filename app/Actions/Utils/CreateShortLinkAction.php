@@ -10,7 +10,6 @@ class CreateShortLinkAction
 {
     public function __construct(
         private readonly ShortLinkService $shortLinkService,
-
     ) {
     }
 
